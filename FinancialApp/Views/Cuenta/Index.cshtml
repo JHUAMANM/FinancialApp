@@ -1,0 +1,32 @@
+
+<div class="container">
+<h1>Cuentas</h1>
+
+<a class="btn btn-primary" href="/cuenta/create">Nueva Cuenta</a>
+
+<table class="table">
+    <thead>
+    <tr>
+        <td>Nombre</td>
+        <td>Tipo de Cuenta</td>
+        <td>
+            
+        </td>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Nombre</td>
+            <td>@item.TipoCuentaId</td>
+            <td>
+                 <a href="/cuentaTransaccion?cuentaId=@item.Id" class="btn btn-link">Transacciones</a>
+                <a href="/cuenta/edit?id=@item.Id" class="btn btn-link">Editar</a>
+                <a href="/cuenta/delete?id=@item.Id" class="btn btn-link">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
