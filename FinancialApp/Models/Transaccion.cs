@@ -7,5 +7,6 @@ public class Transaccion
     public DateTime Fecha { get; set; }
     public string Tipo { get; set; }
     public decimal Monto { get; set; }
+    
     public string Nota { get; set; }
 }
