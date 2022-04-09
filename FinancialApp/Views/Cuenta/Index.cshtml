@@ -19,7 +19,8 @@
     {
         <tr>
             <td>@item.Nombre</td>
-            <td>@item.TipoCuentaId</td>
+            <td>@item.TipoCuenta.Nombre</td>
+            <td>@item.Monto</td>
             <td>
                  <a href="/cuentaTransaccion?cuentaId=@item.Id" class="btn btn-link">Transacciones</a>
                 <a href="/cuenta/edit?id=@item.Id" class="btn btn-link">Editar</a>

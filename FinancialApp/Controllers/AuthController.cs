@@ -38,7 +38,7 @@ public class AuthController : Controller
     public IActionResult Logout()
     {
         HttpContext.SignOutAsync();
-        return RedirectToAction("Index");
+        return RedirectToAction("Login");
 
     }
 }

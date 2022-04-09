@@ -3,16 +3,24 @@ using FinancialApp.DB;
 using FinancialApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinancialApp.Controllers;
 
 [Authorize]
 public class CuentaController : Controller
 {
+    private DbEntities _dbEntities;
+    public CuentaController(DbEntities dbEntities)
+    {
+        this._dbEntities = dbEntities;
+    }
     [HttpGet]
     public IActionResult Index()
     {
-        var cuentas = DbEntities.Cuentas.Where(o => o.UsuarioId == GetLoggedUser().Id).ToList();
+        var cuentas = _dbEntities.Cuentas
+            .Include((o => o.TipoCuenta))
+            .Where(o => o.UsuarioId == GetLoggedUser().Id).ToList();
         ViewBag.Total = cuentas.Any() ? cuentas.Sum(o => o.Monto) : 0;
         return View(cuentas);
     }
@@ -20,7 +28,7 @@ public class CuentaController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        ViewBag.TipoDeCuentas = DbEntities.TipoCuentas;
+        ViewBag.TipoDeCuentas = _dbEntities.TipoCuentas.ToList();
         return View(new Cuenta());
     }
     
@@ -28,6 +36,8 @@ public class CuentaController : Controller
     [HttpPost]
     public IActionResult Create(Cuenta cuenta)
     {
+        cuenta.UsuarioId = GetLoggedUser().Id;
+        
         if (cuenta.TipoCuentaId > 6 || cuenta.TipoCuentaId < 1)
         {
             ModelState.AddModelError("Nombre", "Tipo de cuenta no existe");
@@ -35,12 +45,12 @@ public class CuentaController : Controller
         
         if (!ModelState.IsValid)
         {
-            ViewBag.TipoDeCuentas = DbEntities.TipoCuentas;
+            ViewBag.TipoDeCuentas = _dbEntities.TipoCuentas.ToList();
             return View("Create", cuenta);
         }
-        cuenta.Id = getNextId();
-        cuenta.UsuarioId = GetLoggedUser().Id;
-        DbEntities.Cuentas.Add(cuenta);
+       
+        _dbEntities.Cuentas.Add(cuenta);
+        _dbEntities.SaveChanges();
         return RedirectToAction("Index");
     }
     
@@ -48,8 +58,8 @@ public class CuentaController : Controller
     [HttpGet]
     public IActionResult Edit(int id)
     {
-        var cuenta = DbEntities.Cuentas.First(o => o.Id == id);
-        ViewBag.TipoDeCuenta = DbEntities.TipoCuentas;
+        var cuenta = _dbEntities.Cuentas.First(o => o.Id == id);
+        ViewBag.TipoDeCuenta = _dbEntities.TipoCuentas.ToList();
         return View(cuenta);
     }
     
@@ -59,11 +69,12 @@ public class CuentaController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.TipoDeCuenta = DbEntities.TipoCuentas;
+            ViewBag.TipoDeCuenta = _dbEntities.TipoCuentas.ToList();
             return View("Edit", cuenta);
         }
-        var cuentaDb = DbEntities.Cuentas.First(o => o.Id == id);
+        var cuentaDb = _dbEntities.Cuentas.First(o => o.Id == id);
         cuentaDb.Nombre = cuenta.Nombre;
+        _dbEntities.SaveChanges();
         return RedirectToAction("Index");
     }
     
@@ -72,19 +83,13 @@ public class CuentaController : Controller
     public IActionResult Delete(int id)
     {
         
-        var cuentaDb = DbEntities.Cuentas.First(o => o.Id == id);
-        DbEntities.Cuentas.Remove(cuentaDb);
+        var cuentaDb = _dbEntities.Cuentas.First(o => o.Id == id);
+        _dbEntities.Cuentas.Remove(cuentaDb);
+        _dbEntities.SaveChanges();
         return RedirectToAction("Index");
     }
 
-    public int getNextId()
-    {
-        if (DbEntities.Cuentas.Count == 0)
-            return 1;
-        return DbEntities.Cuentas.Max(o => o.Id) + 1;
-    }
-
-    private Usuario GetLoggedUser()
+   private Usuario GetLoggedUser()
     {
         var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
         var username = claim.Value;
