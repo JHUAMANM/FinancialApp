@@ -1,7 +1,7 @@
 using FinancialApp.DB.Mapping;
 using FinancialApp.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+
 
 namespace FinancialApp.DB;
 

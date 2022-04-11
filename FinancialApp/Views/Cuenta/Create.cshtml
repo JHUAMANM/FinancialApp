@@ -12,22 +12,23 @@
                 
                 <div class="mb-3">
                     <label for="TipoCuentaId">Tipo Cuenta</label>
-                    <select class="form-select" name="TipoCuentaId" id="TipoCuendaId">
-                        <option value="">-- Seleccione un tipo de cuenta --</option>
-                        @foreach (var item in ViewBag.TipoDeCuentas)
-                        {
-                            if (item.Id == Model.TipoCuentaId)
-                            {
-                                <option value="@item.Id" selected>@item.Nombre</option>  
+                                    
+                    <select class="form-select" name="TipoCuentaId" id="TipoCuentaId">
+                       <option value="">-- Seleccione un tipo de cuenta --</option>
+                       @foreach (var item in ViewBag.TipoDeCuentas)
+                       {
+                           if (item.Id == Model.TipoCuentaId)
+                           {
+                            <option value="@item.Id" selected>@item.Nombre</option>
                             }
-                            else
-                            {
-                                <option value="@item.Id">@item.Nombre</option>
+                           else
+                           {
+                               <option value="@item.Id">@item.Nombre</option>
                                                            
-                            }
+                           }
                            
-                        }
-                    </select> 
+                       }
+                    </select>
                     @Html.ValidationMessage("TipoCuentaId")
                 </div>
                 
